@@ -678,12 +678,12 @@ class Stocker():
         
         # Set up the trend fetching object
         pytrends = TrendReq(hl='en-US', tz=360)
-        kw_list = [search]
+        kw_list = ["Blockchain"]
 
         try:
         
             # Create the search object
-            pytrends.build_payload(kw_list, cat=0, timeframe=date_range[0], geo='', gprop='news')
+            pytrends.build_payload(kw_list, cat=0, timeframe=date_range[0], geo='', gprop='')
             
             # Retrieve the interest over time
             trends = pytrends.interest_over_time()
@@ -709,7 +709,9 @@ class Stocker():
         # Predictions of the training data (no future periods)
         future = model.make_future_dataframe(periods=0, freq='D')
         future = model.predict(future)
-        train = pd.merge(train, future[['ds', 'yhat']], on = 'Date', how = 'inner')
+        
+        train['ds'] = pd.to_datetime(train['ds'])
+        train = pd.merge(train, future[['ds', 'yhat']], on = 'ds', how = 'inner')
         
         changepoints = model.changepoints
         train = train.reset_index(drop=True)
@@ -775,10 +777,10 @@ class Stocker():
                 return
 
             print('\n Top Related Queries: \n')
-            print(related_queries[search]['top'].head())
+            print(related_queries[search]['top'])
 
             print('\n Rising Related Queries: \n')
-            print(related_queries[search]['rising'].head())
+            print(related_queries[search]['rising'])
 
             # Upsample the data for joining with training data
             trends = trends.resample('D')
