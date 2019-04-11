@@ -771,8 +771,7 @@ class Stocker():
 
             # Get the Google Trends for specified terms and join to training dataframe
             trends, related_queries = self.retrieve_google_trends(search, date_range)
-
-            if (not trends is True)  or (not related_queries is True):
+            if (trends.empty is True):
                 print('No search trends found for %s' % search)
                 return
 
