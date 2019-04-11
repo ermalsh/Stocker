@@ -678,7 +678,7 @@ class Stocker():
         
         # Set up the trend fetching object
         pytrends = TrendReq(hl='en-US', tz=360)
-        kw_list = ["Blockchain"]
+        kw_list = [search]
 
         try:
         
@@ -772,27 +772,22 @@ class Stocker():
             # Get the Google Trends for specified terms and join to training dataframe
             trends, related_queries = self.retrieve_google_trends(search, date_range)
 
-            if (trends is None)  or (related_queries is None):
+            if (not trends is True)  or (not related_queries is True):
                 print('No search trends found for %s' % search)
                 return
 
-            print('\n Top Related Queries: \n')
-            print(related_queries[search]['top'])
-
-            print('\n Rising Related Queries: \n')
-            print(related_queries[search]['rising'])
-
             # Upsample the data for joining with training data
-            trends = trends.resample('D')
-
-            trends = trends.reset_index(level=0)
+            trends = trends.reset_index(col_level=0)
             trends = trends.rename(columns={'date': 'ds', search: 'freq'})
 
             # Interpolate the frequency
             trends['freq'] = trends['freq'].interpolate()
 
             # Merge with the training data
-            train = pd.merge(train, trends, on = 'ds', how = 'inner')
+            train = pd.merge(train['ds'], trends['ds'], how = 'inner')
+            if (train.empty is True):
+                print('No search trends found for %s within the trend dates' % search)
+                return
 
             # Normalize values
             train['y_norm'] = train['y'] / max(train['y'])
