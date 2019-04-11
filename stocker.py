@@ -929,7 +929,6 @@ class Stocker():
             
             # Create and train a model with the specified cps
             model = self.create_model()
-            print(train)
             model.fit(train)
             future = model.make_future_dataframe(periods=eval_days, freq='D')
                 
