@@ -922,7 +922,7 @@ class Stocker():
         for i, prior in enumerate(changepoint_priors):
             results.ix[i, 'cps'] = prior
             train = self.stock[(pd.to_datetime(self.stock['Date']) > (start_date - pd.DateOffset(years=self.training_years))) & 
-            (pd.to_datetime(self.stock['Date']) < start_date)]
+            (pd.to_datetime(self.stock['Date']) < end_date)]
 
             # Select the changepoint
             self.changepoint_prior_scale = prior
